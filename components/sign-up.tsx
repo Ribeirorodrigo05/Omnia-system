@@ -14,8 +14,9 @@ import {
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Checkbox } from "@/components/ui/checkbox";
-
+import { useRouter } from "next/navigation";
 export default function SignUp() {
+  const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
@@ -220,7 +221,8 @@ export default function SignUp() {
                 Já tem uma conta?{" "}
                 <Button
                   variant="link"
-                  className="px-0 text-blue-400 hover:text-blue-300"
+                  className="px-0 text-blue-400 hover:text-blue-300 courser-pointer"
+                  onClick={() => router.push("/sign-in")}
                 >
                   Entrar
                 </Button>

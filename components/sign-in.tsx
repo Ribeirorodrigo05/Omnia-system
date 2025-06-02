@@ -14,8 +14,10 @@ import {
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Checkbox } from "@/components/ui/checkbox";
+import { useRouter } from "next/navigation";
 
 export default function SignIn() {
+  const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
 
   return (
@@ -157,6 +159,7 @@ export default function SignIn() {
                 <Button
                   variant="link"
                   className="px-0 text-blue-400 hover:text-blue-300"
+                  onClick={() => router.push("/sign-up")}
                 >
                   Cadastre-se
                 </Button>

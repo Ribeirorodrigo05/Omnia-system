@@ -17,8 +17,16 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { useRouter } from "next/navigation";
 export default function SignUp() {
   const router = useRouter();
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [termsAccepted, setTermsAccepted] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
+  const registerUserHandler = () => {};
 
   return (
     <div className="min-h-screen bg-gray-950 flex items-center justify-center p-4">
@@ -48,6 +56,8 @@ export default function SignUp() {
                   type="text"
                   placeholder="Seu nome completo"
                   className="pl-10 bg-gray-800 border-gray-700 text-white placeholder:text-gray-400 focus:border-blue-500"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
                 />
               </div>
             </div>
@@ -63,6 +73,8 @@ export default function SignUp() {
                   type="email"
                   placeholder="seu@email.com"
                   className="pl-10 bg-gray-800 border-gray-700 text-white placeholder:text-gray-400 focus:border-blue-500"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
                 />
               </div>
             </div>
@@ -78,6 +90,11 @@ export default function SignUp() {
                   type="tel"
                   placeholder="(11) 99999-9999"
                   className="pl-10 bg-gray-800 border-gray-700 text-white placeholder:text-gray-400 focus:border-blue-500"
+                  value={phone}
+                  max={11}
+                  pattern="[0-9]{2} [0-9]{5}-[0-9]{4}"
+                  title="Formato: (XX) XXXXX-XXXX"
+                  onChange={(e) => setPhone(e.target.value)}
                 />
               </div>
             </div>
@@ -93,6 +110,8 @@ export default function SignUp() {
                   type={showPassword ? "text" : "password"}
                   placeholder="••••••••"
                   className="pl-10 pr-10 bg-gray-800 border-gray-700 text-white placeholder:text-gray-400 focus:border-blue-500"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
                 />
                 <Button
                   type="button"
@@ -121,6 +140,8 @@ export default function SignUp() {
                   type={showConfirmPassword ? "text" : "password"}
                   placeholder="••••••••"
                   className="pl-10 pr-10 bg-gray-800 border-gray-700 text-white placeholder:text-gray-400 focus:border-blue-500"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
                 />
                 <Button
                   type="button"
@@ -142,6 +163,9 @@ export default function SignUp() {
               <Checkbox
                 id="terms"
                 className="border-gray-600 data-[state=checked]:bg-blue-600"
+                onCheckedChange={(checked) => {
+                  setTermsAccepted(!!checked);
+                }}
               />
               <Label htmlFor="terms" className="text-sm text-gray-400">
                 Aceito os{" "}
@@ -161,7 +185,18 @@ export default function SignUp() {
               </Label>
             </div>
 
-            <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white">
+            <Button
+              onClick={() => registerUserHandler()}
+              disabled={
+                !termsAccepted ||
+                !name ||
+                !email ||
+                !phone ||
+                !password ||
+                !confirmPassword
+              }
+              className="w-full bg-blue-600 hover:bg-blue-700 text-white"
+            >
               Criar conta
             </Button>
 

@@ -15,6 +15,9 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useRouter } from "next/navigation";
+
+import { createUser } from "@/server/services/user/create";
+
 export default function SignUp() {
   const router = useRouter();
   const [name, setName] = useState("");
@@ -26,7 +29,17 @@ export default function SignUp() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
-  const registerUserHandler = () => {};
+  const registerUserHandler = async () => {
+    const userData = {
+      name,
+      email,
+      phone,
+      password,
+      confirmPassword,
+      termsAccepted,
+    };
+    const result = await createUser(userData);
+  };
 
   return (
     <div className="min-h-screen bg-gray-950 flex items-center justify-center p-4">
@@ -45,6 +58,7 @@ export default function SignUp() {
           </CardHeader>
 
           <CardContent className="space-y-4">
+            {" "}
             <div className="space-y-2">
               <Label htmlFor="name" className="text-gray-200">
                 Nome completo
@@ -58,10 +72,10 @@ export default function SignUp() {
                   className="pl-10 bg-gray-800 border-gray-700 text-white placeholder:text-gray-400 focus:border-blue-500"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
+                  data-cy="name-input"
                 />
               </div>
-            </div>
-
+            </div>{" "}
             <div className="space-y-2">
               <Label htmlFor="email" className="text-gray-200">
                 Email
@@ -75,10 +89,10 @@ export default function SignUp() {
                   className="pl-10 bg-gray-800 border-gray-700 text-white placeholder:text-gray-400 focus:border-blue-500"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
+                  data-cy="email-input"
                 />
               </div>
-            </div>
-
+            </div>{" "}
             <div className="space-y-2">
               <Label htmlFor="phone" className="text-gray-200">
                 Telefone
@@ -95,10 +109,10 @@ export default function SignUp() {
                   pattern="[0-9]{2} [0-9]{5}-[0-9]{4}"
                   title="Formato: (XX) XXXXX-XXXX"
                   onChange={(e) => setPhone(e.target.value)}
+                  data-cy="phone-input"
                 />
               </div>
-            </div>
-
+            </div>{" "}
             <div className="space-y-2">
               <Label htmlFor="password" className="text-gray-200">
                 Senha
@@ -112,6 +126,7 @@ export default function SignUp() {
                   className="pl-10 pr-10 bg-gray-800 border-gray-700 text-white placeholder:text-gray-400 focus:border-blue-500"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
+                  data-cy="password-input"
                 />
                 <Button
                   type="button"
@@ -119,6 +134,7 @@ export default function SignUp() {
                   size="sm"
                   className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
                   onClick={() => setShowPassword(!showPassword)}
+                  data-cy="toggle-password-visibility"
                 >
                   {showPassword ? (
                     <EyeOff className="h-4 w-4 text-gray-400" />
@@ -127,8 +143,7 @@ export default function SignUp() {
                   )}
                 </Button>
               </div>
-            </div>
-
+            </div>{" "}
             <div className="space-y-2">
               <Label htmlFor="confirm-password" className="text-gray-200">
                 Confirmar senha
@@ -142,6 +157,7 @@ export default function SignUp() {
                   className="pl-10 pr-10 bg-gray-800 border-gray-700 text-white placeholder:text-gray-400 focus:border-blue-500"
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
+                  data-cy="confirm-password-input"
                 />
                 <Button
                   type="button"
@@ -149,6 +165,7 @@ export default function SignUp() {
                   size="sm"
                   className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
                   onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                  data-cy="toggle-confirm-password-visibility"
                 >
                   {showConfirmPassword ? (
                     <EyeOff className="h-4 w-4 text-gray-400" />
@@ -157,8 +174,7 @@ export default function SignUp() {
                   )}
                 </Button>
               </div>
-            </div>
-
+            </div>{" "}
             <div className="flex items-center space-x-2">
               <Checkbox
                 id="terms"
@@ -166,12 +182,14 @@ export default function SignUp() {
                 onCheckedChange={(checked) => {
                   setTermsAccepted(!!checked);
                 }}
+                data-cy="terms-checkbox"
               />
               <Label htmlFor="terms" className="text-sm text-gray-400">
                 Aceito os{" "}
                 <Button
                   variant="link"
                   className="px-0 h-auto text-blue-400 hover:text-blue-300"
+                  data-cy="terms-link"
                 >
                   termos de uso
                 </Button>{" "}
@@ -179,12 +197,12 @@ export default function SignUp() {
                 <Button
                   variant="link"
                   className="px-0 h-auto text-blue-400 hover:text-blue-300"
+                  data-cy="privacy-link"
                 >
                   política de privacidade
                 </Button>
               </Label>
-            </div>
-
+            </div>{" "}
             <Button
               onClick={() => registerUserHandler()}
               disabled={
@@ -196,10 +214,10 @@ export default function SignUp() {
                 !confirmPassword
               }
               className="w-full bg-blue-600 hover:bg-blue-700 text-white"
+              data-cy="submit-button"
             >
               Criar conta
             </Button>
-
             <div className="relative">
               <div className="absolute inset-0 flex items-center">
                 <Separator className="w-full bg-gray-700" />
@@ -209,12 +227,12 @@ export default function SignUp() {
                   Ou cadastre-se com
                 </span>
               </div>
-            </div>
-
+            </div>{" "}
             <div className="grid grid-cols-2 gap-3">
               <Button
                 variant="outline"
                 className="bg-gray-800 border-gray-700 text-gray-200 hover:bg-gray-700"
+                data-cy="google-signup-button"
               >
                 <svg className="w-4 h-4 mr-2" viewBox="0 0 24 24">
                   <path
@@ -239,6 +257,7 @@ export default function SignUp() {
               <Button
                 variant="outline"
                 className="bg-gray-800 border-gray-700 text-gray-200 hover:bg-gray-700"
+                data-cy="facebook-signup-button"
               >
                 <svg
                   className="w-4 h-4 mr-2"
@@ -249,8 +268,7 @@ export default function SignUp() {
                 </svg>
                 Facebook
               </Button>
-            </div>
-
+            </div>{" "}
             <div className="text-center">
               <p className="text-sm text-gray-400">
                 Já tem uma conta?{" "}
@@ -258,6 +276,7 @@ export default function SignUp() {
                   variant="link"
                   className="px-0 text-blue-400 hover:text-blue-300 courser-pointer"
                   onClick={() => router.push("/sign-in")}
+                  data-cy="sign-in-link"
                 >
                   Entrar
                 </Button>

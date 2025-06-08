@@ -94,18 +94,10 @@ describe("Sign Up Page", () => {
       "password"
     );
   });
-
   it("should validate form inputs", () => {
     // Testar validação de email
     cy.get('[data-cy="email-input"]').type("email-invalido");
     cy.get('[data-cy="email-input"]').should("have.attr", "type", "email");
-
-    // Testar validação de telefone
-    cy.get('[data-cy="phone-input"]').should(
-      "have.attr",
-      "pattern",
-      "[0-9]{2} [0-9]{5}-[0-9]{4}"
-    );
 
     // Testar placeholder dos campos
     cy.get('[data-cy="name-input"]').should(
@@ -217,5 +209,68 @@ describe("Sign Up Page", () => {
     cy.get('label[for="password"]').should("exist");
     cy.get('label[for="confirm-password"]').should("exist");
     cy.get('label[for="terms"]').should("exist");
+  });
+
+  it("should format phone number automatically", () => {
+    // Testar formatação gradual do telefone
+    cy.get('[data-cy="phone-input"]').type("11");
+    cy.get('[data-cy="phone-input"]').should("have.value", "11");
+
+    cy.get('[data-cy="phone-input"]').clear().type("1199");
+    cy.get('[data-cy="phone-input"]').should("have.value", "(11) 99");
+
+    cy.get('[data-cy="phone-input"]').clear().type("11999");
+    cy.get('[data-cy="phone-input"]').should("have.value", "(11) 999");
+
+    cy.get('[data-cy="phone-input"]').clear().type("1199999");
+    cy.get('[data-cy="phone-input"]').should("have.value", "(11) 99999");
+
+    cy.get('[data-cy="phone-input"]').clear().type("119999912");
+    cy.get('[data-cy="phone-input"]').should("have.value", "(11) 99999-12");
+
+    cy.get('[data-cy="phone-input"]').clear().type("11999991234");
+    cy.get('[data-cy="phone-input"]').should("have.value", "(11) 99999-1234");
+
+    // Testar que não aceita mais de 11 dígitos
+    cy.get('[data-cy="phone-input"]').clear().type("119999912345");
+    cy.get('[data-cy="phone-input"]').should("have.value", "(11) 99999-1234");
+
+    // Testar que remove caracteres não numéricos
+    cy.get('[data-cy="phone-input"]').clear().type("11abc99999def1234");
+    cy.get('[data-cy="phone-input"]').should("have.value", "(11) 99999-1234");
+  });
+
+  it.only("should send clean phone number to backend on form submission", () => {
+    // Interceptar a chamada da API para verificar os dados enviados
+    cy.intercept("POST", "**/api/users/create", (req) => {
+      // Verificar se o telefone enviado contém apenas números
+      expect(req.body.phone).to.match(/^\d{10,11}$/);
+      expect(req.body.phone).to.not.include("(");
+      expect(req.body.phone).to.not.include(")");
+      expect(req.body.phone).to.not.include("-");
+      expect(req.body.phone).to.not.include(" ");
+
+      req.reply({
+        statusCode: 200,
+        body: { success: true, message: "Usuário criado com sucesso" },
+      });
+    }).as("sign-up");
+
+    // Preencher formulário com telefone formatado
+    cy.get('[data-cy="name-input"]').type("João Silva");
+    cy.get('[data-cy="email-input"]').type("joao@example.com");
+    cy.get('[data-cy="phone-input"]').type("11999991234"); // Será formatado para (11) 99999-1234
+    cy.get('[data-cy="password-input"]').type("MinhaSenh@123");
+    cy.get('[data-cy="confirm-password-input"]').type("MinhaSenh@123");
+    cy.get('[data-cy="terms-checkbox"]').click();
+
+    // Verificar que o campo mostra formatado
+    cy.get('[data-cy="phone-input"]').should("have.value", "(11) 99999-1234");
+
+    // Enviar formulário
+    cy.get('[data-cy="submit-button"]').click();
+
+    // Verificar se a chamada foi feita com o telefone limpo
+    cy.wait("@createUser");
   });
 });

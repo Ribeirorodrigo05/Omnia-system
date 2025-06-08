@@ -54,7 +54,7 @@ Todos os elementos testáveis possuem atributos `data-cy` para seleção consist
 
 - `data-cy="name-input"` - Campo de nome
 - `data-cy="email-input"` - Campo de email
-- `data-cy="phone-input"` - Campo de telefone
+- `data-cy="phone-input"` - Campo de telefone (com formatação automática)
 - `data-cy="password-input"` - Campo de senha
 - `data-cy="confirm-password-input"` - Campo de confirmação de senha
 - `data-cy="terms-checkbox"` - Checkbox de termos
@@ -107,6 +107,7 @@ cy.checkFormValidation(false); // Espera que o botão esteja desabilitado
 3. **Funcionalidades interativas**
 
    - Toggle de visibilidade de senhas
+   - Formatação automática do telefone (xx) xxxxx-xxxx
    - Preenchimento e manutenção de estado dos campos
    - Navegação para página de login
 
@@ -116,8 +117,35 @@ cy.checkFormValidation(false); // Espera que o botão esteja desabilitado
    - Associação correta de labels com inputs
 
 5. **Fluxo completo**
+
    - Preenchimento completo do formulário
    - Envio de dados (simulado)
+   - Verificação de limpeza de formatação antes do envio
+
+6. **Validação de dados**
+   - Formatação automática do telefone durante digitação
+   - Envio de telefone sem formatação para o backend
+   - Validação de senhas e confirmação
+
+## Funcionalidades Especiais
+
+### Formatação Automática de Telefone
+
+O campo de telefone possui formatação automática que:
+
+- Converte entrada para formato (xx) xxxxx-xxxx
+- Remove caracteres não numéricos automaticamente
+- Limita a 11 dígitos (padrão brasileiro)
+- Envia apenas números para o backend
+
+**Exemplo de uso nos testes:**
+
+```typescript
+// Digitar apenas números
+cy.get('[data-cy="phone-input"]').type("11999991234");
+// Campo mostrará: (11) 99999-1234
+// Backend receberá: 11999991234
+```
 
 ## Boas Práticas Implementadas
 

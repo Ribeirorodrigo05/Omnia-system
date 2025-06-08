@@ -29,11 +29,39 @@ export default function SignUp() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
+  // Função para formatar o telefone automaticamente
+  const formatPhone = (value: string) => {
+    // Remove todos os caracteres não numéricos
+    const numbers = value.replace(/\D/g, "");
+
+    // Limita a 11 dígitos
+    const limitedNumbers = numbers.slice(0, 11);
+
+    // Aplica a formatação baseada no comprimento
+    if (limitedNumbers.length <= 2) {
+      return limitedNumbers;
+    } else if (limitedNumbers.length <= 7) {
+      return `(${limitedNumbers.slice(0, 2)}) ${limitedNumbers.slice(2)}`;
+    } else {
+      return `(${limitedNumbers.slice(0, 2)}) ${limitedNumbers.slice(
+        2,
+        7
+      )}-${limitedNumbers.slice(7)}`;
+    }
+  };
+
+  const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const formattedPhone = formatPhone(e.target.value);
+    setPhone(formattedPhone);
+  };
   const registerUserHandler = async () => {
+    // Remove formatação do telefone antes de enviar
+    const cleanPhone = phone.replace(/\D/g, "");
+
     const userData = {
       name,
       email,
-      phone,
+      phone: cleanPhone,
       password,
       confirmPassword,
       termsAccepted,
@@ -98,17 +126,16 @@ export default function SignUp() {
                 Telefone
               </Label>
               <div className="relative">
-                <Phone className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                <Phone className="absolute left-3 top-3 h-4 w-4 text-gray-400" />{" "}
                 <Input
                   id="phone"
                   type="tel"
                   placeholder="(11) 99999-9999"
                   className="pl-10 bg-gray-800 border-gray-700 text-white placeholder:text-gray-400 focus:border-blue-500"
                   value={phone}
-                  max={11}
-                  pattern="[0-9]{2} [0-9]{5}-[0-9]{4}"
+                  maxLength={15}
                   title="Formato: (XX) XXXXX-XXXX"
-                  onChange={(e) => setPhone(e.target.value)}
+                  onChange={handlePhoneChange}
                   data-cy="phone-input"
                 />
               </div>

@@ -16,15 +16,15 @@ const createUserSchema = z
       .email("Formato de email inválido")
       .max(100, "Email deve ter no máximo 100 caracteres")
       .toLowerCase(),
-
     phone: z
       .string()
       .optional()
       .refine((phone) => {
         if (!phone) return true;
-        const phoneRegex = /^(?:\(\d{2}\)\s?)?(?:\d{4,5}[-\s]?\d{4})$/;
+        // Aceita apenas números (11 dígitos para celular brasileiro)
+        const phoneRegex = /^\d{10,11}$/;
         return phoneRegex.test(phone);
-      }, "Formato de telefone inválido"),
+      }, "Telefone deve conter 10 ou 11 dígitos"),
 
     password: z
       .string()

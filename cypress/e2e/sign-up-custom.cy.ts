@@ -76,4 +76,21 @@ describe("Sign Up Form - Custom Commands", () => {
     // Verificar se a chamada foi feita (se implementada)
     // cy.wait('@createUser')
   });
+
+  it("should format phone correctly when using custom command", () => {
+    const userData = {
+      name: "Carlos Santos",
+      email: "carlos@test.com",
+      phone: "(21) 98888-7777", // Será convertido para apenas números
+      password: "MinhaSenh@123",
+      confirmPassword: "MinhaSenh@123",
+    };
+
+    cy.fillSignUpForm(userData);
+
+    // Verificar se o telefone foi formatado corretamente no campo
+    cy.get('[data-cy="phone-input"]').should("have.value", "(21) 98888-7777");
+
+    cy.checkFormValidation(true);
+  });
 });

@@ -22,7 +22,9 @@ Cypress.Commands.add(
   }) => {
     cy.get('[data-cy="name-input"]').type(userData.name);
     cy.get('[data-cy="email-input"]').type(userData.email);
-    cy.get('[data-cy="phone-input"]').type(userData.phone);
+    // Para o telefone, digitamos apenas os números, a formatação será automática
+    const phoneNumbers = userData.phone.replace(/\D/g, "");
+    cy.get('[data-cy="phone-input"]').type(phoneNumbers);
     cy.get('[data-cy="password-input"]').type(userData.password);
     cy.get('[data-cy="confirm-password-input"]').type(userData.confirmPassword);
 

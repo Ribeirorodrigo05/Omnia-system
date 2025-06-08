@@ -10,6 +10,4 @@ export async function createUser(userData: User): Promise<any> {
     console.error("User creation validation failed:", errors);
     return errors;
   }
-
-  console.log("User created successfully:", userData);
 }

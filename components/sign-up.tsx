@@ -75,15 +75,17 @@ export default function SignUp() {
 
       const result = await createUserService(userData);
 
-      if (result.success) {
+      if (result?.success) {
         // Redirecionar para página de sucesso ou login
-        router.push("/sign-in?message=account-created");
+        router.push("/sign-in");
       } else {
         // Tratar erros de validação
-        if (result.errors) {
+        if (result?.errors) {
           setErrors(result.errors);
-        } else if (result.error) {
+        } else if (result?.error) {
           setErrors({ general: [result.error] });
+        } else {
+          setErrors({ general: ["Resposta inválida do servidor"] });
         }
       }
     } catch (error) {
@@ -108,10 +110,32 @@ export default function SignUp() {
             <CardDescription className="text-gray-400">
               Preencha os dados abaixo para criar sua conta
             </CardDescription>
-          </CardHeader>
-
+          </CardHeader>{" "}
           <CardContent className="space-y-4">
-            {" "}
+            {/* Exibição de erros */}
+            {Object.keys(errors).length > 0 && (
+              <div className="bg-red-900/20 border border-red-700 rounded-lg p-4 space-y-2">
+                {Object.entries(errors).map(([field, messages]) => (
+                  <div key={field}>
+                    {Array.isArray(messages) ? (
+                      messages.map((message, index) => (
+                        <p key={index} className="text-red-400 text-sm">
+                          {field === "general"
+                            ? message
+                            : `${field}: ${message}`}
+                        </p>
+                      ))
+                    ) : (
+                      <p className="text-red-400 text-sm">
+                        {field === "general"
+                          ? messages
+                          : `${field}: ${messages}`}
+                      </p>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}{" "}
             <div className="space-y-2">
               <Label htmlFor="name" className="text-gray-200">
                 Nome completo
@@ -258,6 +282,7 @@ export default function SignUp() {
             <Button
               onClick={() => registerUserHandler()}
               disabled={
+                isLoading ||
                 !termsAccepted ||
                 !name ||
                 !email ||
@@ -265,10 +290,36 @@ export default function SignUp() {
                 !password ||
                 !confirmPassword
               }
-              className="w-full bg-blue-600 hover:bg-blue-700 text-white"
+              className="w-full bg-blue-600 hover:bg-blue-700 text-white disabled:opacity-50"
               data-cy="submit-button"
             >
-              Criar conta
+              {isLoading ? (
+                <div className="flex items-center">
+                  <svg
+                    className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                  >
+                    <circle
+                      className="opacity-25"
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="currentColor"
+                      strokeWidth="4"
+                    ></circle>
+                    <path
+                      className="opacity-75"
+                      fill="currentColor"
+                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                    ></path>
+                  </svg>
+                  Criando conta...
+                </div>
+              ) : (
+                "Criar conta"
+              )}
             </Button>
             <div className="relative">
               <div className="absolute inset-0 flex items-center">

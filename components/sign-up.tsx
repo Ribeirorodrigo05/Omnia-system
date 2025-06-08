@@ -16,7 +16,7 @@ import { Separator } from "@/components/ui/separator";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useRouter } from "next/navigation";
 
-import { createUser } from "@/server/services/user/create";
+import { createUserService } from "@/server/services/user";
 
 export default function SignUp() {
   const router = useRouter();
@@ -28,6 +28,8 @@ export default function SignUp() {
   const [termsAccepted, setTermsAccepted] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [errors, setErrors] = useState<Record<string, string[]>>({});
 
   // Função para formatar o telefone automaticamente
   const formatPhone = (value: string) => {
@@ -55,18 +57,41 @@ export default function SignUp() {
     setPhone(formattedPhone);
   };
   const registerUserHandler = async () => {
-    // Remove formatação do telefone antes de enviar
-    const cleanPhone = phone.replace(/\D/g, "");
+    setIsLoading(true);
+    setErrors({});
 
-    const userData = {
-      name,
-      email,
-      phone: cleanPhone,
-      password,
-      confirmPassword,
-      termsAccepted,
-    };
-    const result = await createUser(userData);
+    try {
+      // Remove formatação do telefone antes de enviar
+      const cleanPhone = phone.replace(/\D/g, "");
+
+      const userData = {
+        name,
+        email,
+        phone: cleanPhone,
+        password,
+        confirmPassword,
+        termsAccepted,
+      };
+
+      const result = await createUserService(userData);
+
+      if (result.success) {
+        // Redirecionar para página de sucesso ou login
+        router.push("/sign-in?message=account-created");
+      } else {
+        // Tratar erros de validação
+        if (result.errors) {
+          setErrors(result.errors);
+        } else if (result.error) {
+          setErrors({ general: [result.error] });
+        }
+      }
+    } catch (error) {
+      console.error("Erro ao criar usuário:", error);
+      setErrors({ general: ["Erro interno do servidor"] });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (

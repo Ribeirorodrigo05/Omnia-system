@@ -73,21 +73,29 @@ export default function SignUp() {
         termsAccepted,
       };
 
-      const result = await createUserService(userData);
+      // const result = await createUserService(userData);
 
-      if (result?.success) {
-        // Redirecionar para página de sucesso ou login
-        router.push("/sign-in");
-      } else {
-        // Tratar erros de validação
-        if (result?.errors) {
-          setErrors(result.errors);
-        } else if (result?.error) {
-          setErrors({ general: [result.error] });
-        } else {
-          setErrors({ general: ["Resposta inválida do servidor"] });
-        }
-      }
+      const result = await fetch("/api/user", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(userData),
+      });
+
+      // if (result?.success) {
+      //   // Redirecionar para página de sucesso ou login
+      //   router.push("/sign-in");
+      // } else {
+      //   // Tratar erros de validação
+      //   if (result?.errors) {
+      //     setErrors(result.errors);
+      //   } else if (result?.error) {
+      //     setErrors({ general: [result.error] });
+      //   } else {
+      //     setErrors({ general: ["Resposta inválida do servidor"] });
+      //   }
+      // }
     } catch (error) {
       console.error("Erro ao criar usuário:", error);
       setErrors({ general: ["Erro interno do servidor"] });
